@@ -1,6 +1,6 @@
 package net.karmacoder.duke.samples;
 
-import net.karmacoder.duke.Image;
+import net.karmacoder.duke.image.Image;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;

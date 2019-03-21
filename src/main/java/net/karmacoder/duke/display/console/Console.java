@@ -1,6 +1,7 @@
-package net.karmacoder.duke.console;
+package net.karmacoder.duke.display.console;
 
-import net.karmacoder.duke.Displayer;
+import net.karmacoder.duke.display.Displayer;
+import net.karmacoder.duke.image.Image;
 
 import java.io.PrintStream;
 
@@ -21,7 +22,7 @@ public class Console implements Displayer {
   private final String TWO_ROWS_FORMAT = "\u001B[38;5;%d;48;5;%dm▀";
 
   @Override
-  public void display(net.karmacoder.duke.Image image) {
+  public void display(Image image) {
     final int[] pixels = image.getPixels();
     for (int row = 0; row < image.getHeight(); row += 2) {
       for (int column = 0; column < image.getWidth(); column++) {

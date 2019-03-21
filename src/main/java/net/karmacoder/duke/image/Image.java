@@ -1,4 +1,4 @@
-package net.karmacoder.duke;
+package net.karmacoder.duke.image;
 
 public interface Image {
     int[] getPixels();

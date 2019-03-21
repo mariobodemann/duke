@@ -1,6 +1,6 @@
 package net.karmacoder.duke;
 
-import net.karmacoder.duke.console.Console;
+import net.karmacoder.duke.display.console.Console;
 import net.karmacoder.duke.samples.Images;
 
 import javax.imageio.ImageIO;
