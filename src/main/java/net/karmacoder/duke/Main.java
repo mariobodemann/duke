@@ -1,6 +1,12 @@
 package net.karmacoder.duke;
 
 import net.karmacoder.duke.display.console.Console;
+import net.karmacoder.duke.engine.RayCasting;
+import net.karmacoder.duke.engine.RayCasting.Input;
+import net.karmacoder.duke.engine.RayCasting.Level;
+import net.karmacoder.duke.engine.RayCasting.Screen;
+import net.karmacoder.duke.image.LevelImage;
+import net.karmacoder.duke.math.VectorMath;
 import net.karmacoder.duke.samples.Images;
 
 import javax.imageio.ImageIO;
@@ -19,6 +25,7 @@ public class Main {
     float scale = 1.0f;
     int width = -1;
     int height = -1;
+    boolean threeD = false;
     List<String> files = new ArrayList<>();
 
     static Settings fromArguments(List<String> arguments) {
@@ -39,6 +46,10 @@ public class Main {
           settings.height = Integer.parseInt(arguments.get(i + 1));
         }
 
+        if (argument.equals("3d")) {
+          settings.threeD = true;
+        }
+
         if (new File(argument).exists()) {
           settings.files.add(argument);
         }
@@ -53,8 +64,13 @@ public class Main {
 
     final Settings settings = Settings.fromArguments(arguments);
 
-    if (arguments.size() == 0 || arguments.contains("--help") || arguments.contains("-h") || settings.files.size() == 0) {
+    if (arguments.size() == 0 || arguments.contains("--help") || arguments.contains("-h") || settings.files.isEmpty()) {
       showHelp();
+      return;
+    }
+
+    if (settings.threeD) {
+      threeD(settings);
     } else {
       for (final String file : settings.files) {
         if (settings.files.size() > 1) {
@@ -70,6 +86,49 @@ public class Main {
         } else {
           new Console().display(Images.fromBufferedImage(img));
         }
+      }
+    }
+  }
+
+  private static void threeD(Settings settings) throws IOException {
+    final var level = Level.fromFile(settings.files.get(0));
+
+    final var input = new Input(
+        level.initialPlayer,
+        new Input.Camera(10. * settings.scale, 10. * settings.scale)
+    );
+
+    final var width = settings.width < 0 ? 30 : settings.width;
+    final var height = settings.height < 0 ? 40 : settings.height;
+
+    final var engine = new RayCasting(new Screen(width, height));
+    final var display = new Console();
+
+    engine.loadLevel(level);
+    engine.processInput(input);
+
+    System.out.println("Current level:");
+    display.display(new LevelImage(level));
+
+    final var console = System.console();
+    var read = 0;
+    var rot = VectorMath.rot(VectorMath.dtor(5));
+
+    if (console == null) {
+      display.display(engine.renderFrame());
+    } else {
+      System.out.println("<<Press a key to continue.>>");
+      try {
+        read = console.reader().read();
+        while (read != 27) {
+          System.out.println(read);
+          input.player.dir = VectorMath.times(rot, input.player.dir);
+          engine.processInput(input);
+
+          display.display(engine.renderFrame());
+          read = console.reader().read();
+        }
+      } catch (IOException e) {
       }
     }
   }
