@@ -10,7 +10,7 @@ import static java.lang.Math.round;
 public class Console implements Displayer {
   private final PrintStream out;
 
-  public Console(PrintStream out) {
+  private Console(PrintStream out) {
     this.out = out;
   }
 
@@ -23,8 +23,8 @@ public class Console implements Displayer {
 
   @Override
   public void display(Image image) {
-    final int[] pixels = image.getPixels();
-    for (int row = 0; row < image.getHeight(); row += 2) {
+    final var pixels = image.getPixels();
+    for (var row = 0; row < image.getHeight(); row += 2) {
       for (int column = 0; column < image.getWidth(); column++) {
         final int topHalfColor = getPixelAt(pixels, column, row, image.getWidth(), image.getHeight());
         final int bottomHalfColor = getPixelAt(pixels, column, row + 1, image.getWidth(), image.getHeight());

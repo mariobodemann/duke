@@ -1,12 +1,16 @@
 package net.karmacoder.duke.math;
 
-import static java.lang.Math.*;
+import static java.lang.Math.PI;
+import static java.lang.Math.abs;
+import static java.lang.Math.cos;
+import static java.lang.Math.sin;
+import static java.lang.Math.sqrt;
 
 public class VectorMath {
 
   public static class V {
-    public double x;
-    public double y;
+    public final double x;
+    public final double y;
 
     public V(double x, double y) {
       this.x = x;
@@ -15,41 +19,41 @@ public class VectorMath {
   }
 
   public static class Hsv {
-    public double h;
-    public double s;
-    public double v;
+    double h;
+    double s;
+    double v;
   }
 
   public static class M {
-    public double[] m = new double[4];
+    final double[] m = new double[4];
 
-    public M(double a, double b, double c, double d) {
+    M(double a, double b, double c, double d) {
       m[0] = a;
       m[1] = b;
       m[2] = c;
       m[3] = d;
     }
 
-    public double a() {
+    double a() {
       return m[0];
     }
 
-    public double b() {
+    double b() {
       return m[1];
     }
 
-    public double c() {
+    double c() {
       return m[2];
     }
 
-    public double d() {
+    double d() {
       return m[3];
     }
   }
 
   public static M rot(double angle) {
-    double c = cos(angle);
-    double s = sin(angle);
+    final var c = cos(angle);
+    final var s = sin(angle);
 
     return new M(c, -s, s, c);
   }
@@ -75,7 +79,7 @@ public class VectorMath {
   }
 
   public static V normalize(V v) {
-    double l = sqrt(v.x * v.x + v.y * v.y);
+    final var l = sqrt(v.x * v.x + v.y * v.y);
     return times(v, 1.0 / l);
   }
 
@@ -120,13 +124,13 @@ public class VectorMath {
   }
 
   public static int hsvToRgb(Hsv hsv) {
-    double c = hsv.v * hsv.s;
-    double x = c * (1.0 - abs((hsv.h / 60.0 % 2.0) - 1.0));
-    double m = hsv.v - c;
+    final var c = hsv.v * hsv.s;
+    final var x = c * (1.0 - abs((hsv.h / 60.0 % 2.0) - 1.0));
+    final var m = hsv.v - c;
 
-    double r = 0.0;
-    double g = 0.0;
-    double b = 0.0;
+    var r = 0.0;
+    var g = 0.0;
+    var b = 0.0;
 
     if (0 <= hsv.h && hsv.h < 60) {
       r = c;

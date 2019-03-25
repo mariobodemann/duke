@@ -37,8 +37,8 @@ public class Images {
     if (scale == 1.0f) {
       return new UnScaledBufferedImage(image);
     } else {
-      int width = (int) (image.getWidth() * scale);
-      int height = (int) (image.getHeight() * scale);
+      final var width = (int) (image.getWidth() * scale);
+      final var height = (int) (image.getHeight() * scale);
       return new ScaledBufferedImage(image, width, height);
     }
   }
@@ -57,7 +57,7 @@ public class Images {
     private final int width;
     private final int height;
 
-    public UnScaledBufferedImage(BufferedImage image) {
+    UnScaledBufferedImage(BufferedImage image) {
       this.width = image.getWidth();
       this.height = image.getHeight();
       data = image.getRGB(
@@ -89,13 +89,13 @@ public class Images {
     private final int width;
     private final int height;
 
-    public ScaledBufferedImage(BufferedImage image, int width, int height) {
-      float aspectRatio = ((float) image.getWidth()) / image.getHeight();
+    ScaledBufferedImage(BufferedImage image, int width, int height) {
+      final var aspectRatio = ((float) image.getWidth()) / image.getHeight();
 
       this.width = width <= 0 ? (int) (height * aspectRatio) : width;
       this.height = height <= 0 ? (int) (width / aspectRatio) : height;
 
-      final BufferedImage scaledImage = new BufferedImage(getWidth(), getHeight(), TYPE_INT_RGB);
+      final var scaledImage = new BufferedImage(getWidth(), getHeight(), TYPE_INT_RGB);
       Graphics2D graphics2D = scaledImage.createGraphics();
       graphics2D.drawImage(image, 0, 0, getWidth(), getHeight(), null);
       graphics2D.dispose();

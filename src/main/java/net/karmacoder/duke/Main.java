@@ -20,20 +20,20 @@ import java.util.List;
 import static net.karmacoder.duke.samples.Images.duke;
 
 public class Main {
-  public static class Settings {
+  static class Settings {
     boolean scaled = false;
     float scale = 1.0f;
     int width = -1;
     int height = -1;
     boolean threeD = false;
-    List<String> files = new ArrayList<>();
+    final List<String> files = new ArrayList<>();
 
     static Settings fromArguments(List<String> arguments) {
-      final Settings settings = new Settings();
-      for (int i = 0; i < arguments.size(); ++i) {
+      final var settings = new Settings();
+      for (var i = 0; i < arguments.size(); ++i) {
         final String argument = arguments.get(i);
         if (argument.equals("--scale") && arguments.size() > i + 1) {
-          final String stringSize = arguments.get(i + 1);
+          final var stringSize = arguments.get(i + 1);
           settings.scale = Float.parseFloat(stringSize);
           settings.scaled = true;
         }
@@ -60,9 +60,8 @@ public class Main {
   }
 
   public static void main(String[] args) throws IOException {
-    final List<String> arguments = Arrays.asList(args);
-
-    final Settings settings = Settings.fromArguments(arguments);
+    final var arguments = Arrays.asList(args);
+    final var settings = Settings.fromArguments(arguments);
 
     if (arguments.size() == 0 || arguments.contains("--help") || arguments.contains("-h") || settings.files.isEmpty()) {
       showHelp();
@@ -72,12 +71,12 @@ public class Main {
     if (settings.threeD) {
       threeD(settings);
     } else {
-      for (final String file : settings.files) {
+      for (final var file : settings.files) {
         if (settings.files.size() > 1) {
           System.out.println(file);
         }
 
-        final BufferedImage img = ImageIO.read(new File(file));
+        final var img = ImageIO.read(new File(file));
 
         if (settings.scaled) {
           new Console().display(Images.fromBufferedImage(img, settings.scale));

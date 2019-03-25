@@ -15,7 +15,12 @@ import java.util.List;
 
 import static java.lang.Integer.parseInt;
 import static java.lang.Math.abs;
-import static net.karmacoder.duke.math.VectorMath.*;
+import static net.karmacoder.duke.math.VectorMath.V;
+import static net.karmacoder.duke.math.VectorMath.dtor;
+import static net.karmacoder.duke.math.VectorMath.rot;
+import static net.karmacoder.duke.math.VectorMath.times;
+import static net.karmacoder.duke.math.VectorMath.vminus;
+import static net.karmacoder.duke.math.VectorMath.vplus;
 
 public class RayCasting implements Engine<RayCasting.Level, RayCasting.Input> {
 
@@ -26,7 +31,7 @@ public class RayCasting implements Engine<RayCasting.Level, RayCasting.Input> {
     public final int width;
     public final int height;
 
-    public Level(Player initialPlayer, int width, int height, List<Integer> cells, List<Image> assets) {
+    Level(Player initialPlayer, int width, int height, List<Integer> cells, List<Image> assets) {
       this.initialPlayer = initialPlayer;
       this.width = width;
       this.height = height;
@@ -76,13 +81,13 @@ public class RayCasting implements Engine<RayCasting.Level, RayCasting.Input> {
 
     private static List<Integer> getCells(List<String> lines, int width, int height) throws IOException {
       final List<Integer> result = new ArrayList<>(width * height);
-      for (int i = 0; i < height; ++i) {
+      for (var i = 0; i < height; ++i) {
         final var line = lines.remove(0);
         if (line.length() < width) {
           throw new IOException("Level Line is to small: Line " + i + " needs to be atleast " + width + " characters long");
         }
 
-        for (int x = 0; x < width; ++x) {
+        for (var x = 0; x < width; ++x) {
           result.add(line.charAt(x) - '0');
         }
       }
@@ -116,10 +121,10 @@ public class RayCasting implements Engine<RayCasting.Level, RayCasting.Input> {
   }
 
   public static class Player {
-    public V pos;
+    final V pos;
     public V dir;
 
-    public Player(V pos, V dir) {
+    Player(V pos, V dir) {
       this.pos = pos;
       this.dir = dir;
     }
@@ -128,8 +133,8 @@ public class RayCasting implements Engine<RayCasting.Level, RayCasting.Input> {
   public static class Input {
 
     public static class Camera {
-      double distance;
-      double width;
+      final double distance;
+      final double width;
 
       public Camera(double distance, double width) {
         this.distance = distance;
@@ -137,8 +142,8 @@ public class RayCasting implements Engine<RayCasting.Level, RayCasting.Input> {
       }
     }
 
-    public Player player;
-    public Camera camera;
+    public final Player player;
+    final Camera camera;
 
     public Input(Player player, Camera camera) {
       this.player = player;
@@ -147,8 +152,8 @@ public class RayCasting implements Engine<RayCasting.Level, RayCasting.Input> {
   }
 
   public static class Screen {
-    int width;
-    int height;
+    final int width;
+    final int height;
 
     public Screen(int width, int height) {
       this.width = width;
@@ -156,7 +161,7 @@ public class RayCasting implements Engine<RayCasting.Level, RayCasting.Input> {
     }
   }
 
-  private Screen screen;
+  private final Screen screen;
   private Level level;
   private Input input;
 
@@ -183,13 +188,13 @@ public class RayCasting implements Engine<RayCasting.Level, RayCasting.Input> {
   @Override
   public Image renderFrame() {
 
-    final List<Hit> hits = new ArrayList<>(screen.width);
+    final var hits = new ArrayList<Hit>(screen.width);
     castAllColumns(hits);
 
-    final int[] pixels = new int[screen.width * screen.height];
+    final var pixels = new int[screen.width * screen.height];
 
-    for (int y = 0; y < screen.height; ++y) {
-      for (int x = 0; x < screen.width; ++x) {
+    for (var y = 0; y < screen.height; ++y) {
+      for (var x = 0; x < screen.width; ++x) {
         pixels[x + y * screen.width] = rayCast(x, y, hits, screen);
       }
     }
@@ -213,12 +218,12 @@ public class RayCasting implements Engine<RayCasting.Level, RayCasting.Input> {
   }
 
   class Hit {
-    V coordinate;
-    V direction;
-    int cell;
-    double distance;
+    final V coordinate;
+    final V direction;
+    final int cell;
+    final double distance;
 
-    public Hit(V coordinate, V direction, int cell, double distance) {
+    Hit(V coordinate, V direction, int cell, double distance) {
       this.coordinate = coordinate;
       this.direction = direction;
       this.cell = cell;
@@ -226,21 +231,21 @@ public class RayCasting implements Engine<RayCasting.Level, RayCasting.Input> {
     }
   }
 
-  void castAllColumns(List<Hit> hits) {
-    V playerToPlane = times(input.player.dir, input.camera.distance);
-    V planeDir = times(rot(dtor(90.0)), input.player.dir);
-    V planeStart = vplus(
+  private void castAllColumns(List<Hit> hits) {
+    final var playerToPlane = times(input.player.dir, input.camera.distance);
+    final var planeDir = times(rot(dtor(90.0)), input.player.dir);
+    final var planeStart = vplus(
         input.player.pos, vplus(playerToPlane, times(planeDir, input.camera.width / 2.0)));
 
-    for (int x = 0; x < screen.width; ++x) {
-      V rayOnPlane =
+    for (var x = 0; x < screen.width; ++x) {
+      var rayOnPlane =
           vplus(planeStart,
               times(times(rot(dtor(180.0)), planeDir),
                   input.camera.width * (1.0 - (double) x / screen.width)));
-      V rayDir = vminus(rayOnPlane, input.player.pos);
+      var rayDir = vminus(rayOnPlane, input.player.pos);
 
-      boolean hit = false;
-      for (double distance = 0.01; distance < 100. && !hit; distance += 0.01) {
+      var hit = false;
+      for (var distance = 0.01; distance < 100. && !hit; distance += 0.01) {
         V check = vplus(input.player.pos, times(rayDir, distance));
         if (((int) check.x) >= 0 && ((int) check.x) < level.width &&
             ((int) check.y) >= 0 && ((int) check.y) < level.height) {
@@ -262,15 +267,14 @@ public class RayCasting implements Engine<RayCasting.Level, RayCasting.Input> {
     }
   }
 
-  int rayCast(int x, int y, List<Hit> hits, Screen screen) {
-    final Hit hit = hits.get(x);
+  private int rayCast(int x, int y, List<Hit> hits, Screen screen) {
+    final var hit = hits.get(x);
     if (hit == null) {
       return drawCeiling();
     }
 
-    double distance = hit.distance;
-    double wallheight = Math.min(1.0 / distance, screen.height);
-    double horizon = screen.height / 2.0;
+    final var distance = hit.distance;
+    final var wallheight = Math.min(1.0 / distance, screen.height);
 
     if (y > screen.height / 2. - wallheight / 2. &&
         y < screen.height / 2. + wallheight / 2.) {
@@ -285,22 +289,22 @@ public class RayCasting implements Engine<RayCasting.Level, RayCasting.Input> {
     }
   }
 
-  int drawHit(Hit hit, double y, double height) {
-    double u = abs((hit.coordinate.x + hit.coordinate.y) % 1.0);
-    double v = y / height;
-    v = VectorMath.clamp(v, 0., 0.999);
-    Image asset = level.assets.get(hit.cell - 1); // assets start from 1 on the map
+  private int drawHit(Hit hit, double y, double height) {
+    final var u = abs((hit.coordinate.x + hit.coordinate.y) % 1.0);
+    final var v = VectorMath.clamp(y / height, 0., 0.999);
+    final var asset = level.assets.get(hit.cell - 1); // assets start from 1 on the map
 
-    int tx = (int) (asset.getWidth() * u);
-    int ty = (int) (asset.getHeight() * v);
+    final var tx = (int) (asset.getWidth() * u);
+    final var ty = (int) (asset.getHeight() * v);
+
     return asset.getPixels()[tx + ty * asset.getWidth()];
   }
 
-  int drawCeiling() {
+  private int drawCeiling() {
     return 0x0000FF;
   }
 
-  int drawFloor() {
+  private int drawFloor() {
     return 0x00FF00;
   }
 }

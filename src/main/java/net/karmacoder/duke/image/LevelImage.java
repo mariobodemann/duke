@@ -12,11 +12,11 @@ public class LevelImage implements Image {
   @Override
   public int[] getPixels() {
     final var cellcount = level.width * level.height;
-    final int[] arr = new int[cellcount];
-    for (int i = 0; i < cellcount; ++i) {
+    final var arr = new int[cellcount];
+    for (var i = 0; i < cellcount; ++i) {
       if (level.cells.get(i) != 0) {
-        final Image asset = level.assets.get(level.cells.get(i) - 1);
-        final int centerIndex = (int) (asset.getWidth() / 2.) + (int) (asset.getHeight() / 2. * asset.getWidth());
+        final var asset = level.assets.get(level.cells.get(i) - 1);
+        final var centerIndex = (int) (asset.getWidth() / 2.) + (int) (asset.getHeight() / 2. * asset.getWidth());
         arr[i] = asset.getPixels()[centerIndex];
       } else {
         arr[i] = 0;
