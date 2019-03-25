@@ -17,4 +17,17 @@ will output this beautiful image
 
 <img src="./assets/1.png" width=100/>
 
+# Displaying a simple raycasting 3d env _WITH TEXTURES_
+
+```
+./gradlew -Dorg.gradle.java.home=../jdk-12 assemble
+```
+
+and
+
+```
+../jdk-12/bin/java -jar build/libs/duke.jar 3d level
+```
+
+
 Enjoy
