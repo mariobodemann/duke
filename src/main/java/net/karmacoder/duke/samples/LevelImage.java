@@ -1,4 +1,6 @@
-package net.karmacoder.duke.image;
+package net.karmacoder.duke.samples;
+
+import net.karmacoder.duke.image.Image;
 
 import static net.karmacoder.duke.engine.RayCasting.Level;
 

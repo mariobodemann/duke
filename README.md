@@ -31,3 +31,9 @@ and
 
 
 Enjoy
+
+
+PS: You might be interested in
+```
+alias duke='~/Applications/jdk-12/bin/java -jar ~/Projects/duke/build/libs/duke.jar --height $(tput lines)'
+```

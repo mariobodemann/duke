@@ -1,12 +1,10 @@
 package net.karmacoder.duke.engine;
 
 import net.karmacoder.duke.image.Image;
+import net.karmacoder.duke.image.ImageFactory;
 import net.karmacoder.duke.image.SinglePixelImage;
 import net.karmacoder.duke.math.VectorMath;
-import net.karmacoder.duke.samples.Images;
 
-import javax.imageio.ImageIO;
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -39,13 +37,13 @@ public class RayCasting implements Engine<RayCasting.Level, RayCasting.Input> {
       this.assets = new ArrayList<>(assets);
     }
 
-    public static Level fromFile(String path) throws IOException {
+    public static Level fromFile(String path, ImageFactory factory) throws Exception {
       final var lines = Files.readAllLines(Path.of(path));
 
       final var player = getPlayer(lines);
       final var size = getLevelDimension(lines);
       final var cells = getCells(lines, size[0], size[1]);
-      final var assets = getAssets(lines);
+      final var assets = getAssets(factory, lines);
 
       return new Level(player, size[0], size[1], cells, assets);
     }
@@ -95,7 +93,7 @@ public class RayCasting implements Engine<RayCasting.Level, RayCasting.Input> {
       return result;
     }
 
-    private static List<Image> getAssets(List<String> lines) throws IOException {
+    private static List<Image> getAssets(ImageFactory factory, List<String> lines) throws Exception {
       final List<Image> result = new ArrayList<>(lines.size());
       for (final var asset : lines) {
         if (asset.length() <= 0) {
@@ -107,7 +105,7 @@ public class RayCasting implements Engine<RayCasting.Level, RayCasting.Input> {
           image = new SinglePixelImage(stringToRgb(asset.substring(1)));
         } else {
           System.out.println(asset);
-          image = Images.fromBufferedImage(ImageIO.read(new File(asset)));
+          image = factory.create(asset);
         }
         result.add(image);
       }
