@@ -12,13 +12,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static java.lang.Integer.parseInt;
-import static java.lang.Math.abs;
-import static net.karmacoder.duke.math.VectorMath.V;
-import static net.karmacoder.duke.math.VectorMath.dtor;
-import static net.karmacoder.duke.math.VectorMath.rot;
-import static net.karmacoder.duke.math.VectorMath.times;
-import static net.karmacoder.duke.math.VectorMath.vminus;
-import static net.karmacoder.duke.math.VectorMath.vplus;
 
 public class RayCasting implements Engine<RayCasting.Level, RayCasting.Input> {
 
@@ -60,8 +53,8 @@ public class RayCasting implements Engine<RayCasting.Level, RayCasting.Input> {
       final var y = Double.parseDouble(split[1]);
       final var a = Double.parseDouble(split[2]);
 
-      final var pos = new V(x, y);
-      final var dir = VectorMath.times(VectorMath.rot(VectorMath.dtor(a)), new V(0, 1));
+      final var pos = new VectorMath.V(x, y);
+      final var dir = VectorMath.times(VectorMath.rot(VectorMath.dtor(a)), new VectorMath.V(0, 1));
 
       return new Player(pos, dir);
     }
@@ -119,10 +112,10 @@ public class RayCasting implements Engine<RayCasting.Level, RayCasting.Input> {
   }
 
   public static class Player {
-    final V pos;
-    public V dir;
+    final VectorMath.V pos;
+    public VectorMath.V dir;
 
-    Player(V pos, V dir) {
+    Player(VectorMath.V pos, VectorMath.V dir) {
       this.pos = pos;
       this.dir = dir;
     }
@@ -216,12 +209,12 @@ public class RayCasting implements Engine<RayCasting.Level, RayCasting.Input> {
   }
 
   class Hit {
-    final V coordinate;
-    final V direction;
+    final VectorMath.V coordinate;
+    final VectorMath.V direction;
     final int cell;
     final double distance;
 
-    Hit(V coordinate, V direction, int cell, double distance) {
+    Hit(VectorMath.V coordinate, VectorMath.V direction, int cell, double distance) {
       this.coordinate = coordinate;
       this.direction = direction;
       this.cell = cell;
@@ -230,21 +223,21 @@ public class RayCasting implements Engine<RayCasting.Level, RayCasting.Input> {
   }
 
   private void castAllColumns(List<Hit> hits) {
-    final var playerToPlane = times(input.player.dir, input.camera.distance);
-    final var planeDir = times(rot(dtor(90.0)), input.player.dir);
-    final var planeStart = vplus(
-        input.player.pos, vplus(playerToPlane, times(planeDir, input.camera.width / 2.0)));
+    final var playerToPlane = VectorMath.times(input.player.dir, input.camera.distance);
+    final var planeDir = VectorMath.times(VectorMath.rot(VectorMath.dtor(90.0)), input.player.dir);
+    final var planeStart = VectorMath.vplus(
+        input.player.pos, VectorMath.vplus(playerToPlane, VectorMath.times(planeDir, input.camera.width / 2.0)));
 
     for (var x = 0; x < screen.width; ++x) {
       var rayOnPlane =
-          vplus(planeStart,
-              times(times(rot(dtor(180.0)), planeDir),
+          VectorMath.vplus(planeStart,
+              VectorMath.times(VectorMath.times(VectorMath.rot(VectorMath.dtor(180.0)), planeDir),
                   input.camera.width * (1.0 - (double) x / screen.width)));
-      var rayDir = vminus(rayOnPlane, input.player.pos);
+      var rayDir = VectorMath.vminus(rayOnPlane, input.player.pos);
 
       var hit = false;
       for (var distance = 0.01; distance < 100. && !hit; distance += 0.01) {
-        V check = vplus(input.player.pos, times(rayDir, distance));
+        VectorMath.V check = VectorMath.vplus(input.player.pos, VectorMath.times(rayDir, distance));
         if (((int) check.x) >= 0 && ((int) check.x) < level.width &&
             ((int) check.y) >= 0 && ((int) check.y) < level.height) {
           int cell = level.cells.get(((int) check.y * level.width) + ((int) check.x));
@@ -288,14 +281,14 @@ public class RayCasting implements Engine<RayCasting.Level, RayCasting.Input> {
   }
 
   private int drawHit(Hit hit, double y, double height) {
-    final var u = abs((hit.coordinate.x + hit.coordinate.y) % 1.0);
+    final var u = Math.abs((hit.coordinate.x + hit.coordinate.y) % 1.0);
     final var v = VectorMath.clamp(y / height, 0., 0.999);
     final var asset = level.assets.get(hit.cell - 1); // assets start from 1 on the map
 
-    final var tx = (int) (asset.getWidth() * u);
-    final var ty = (int) (asset.getHeight() * v);
+    final var tx = (asset.getWidth() * u);
+    final var ty = (asset.getHeight() * v);
 
-    return asset.getPixels()[tx + ty * asset.getWidth()];
+    return asset.getPixels()[(int)tx + (int)(ty * asset.getWidth())];
   }
 
   private int drawCeiling() {

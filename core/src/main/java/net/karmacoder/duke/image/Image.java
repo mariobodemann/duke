@@ -1,9 +1,9 @@
 package net.karmacoder.duke.image;
 
 public interface Image {
-    int[] getPixels();
+  int[] getPixels();
 
-    int getWidth();
+  int getWidth();
 
-    int getHeight();
+  int getHeight();
 }

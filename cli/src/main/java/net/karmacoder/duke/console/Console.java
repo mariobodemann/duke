@@ -1,4 +1,4 @@
-package net.karmacoder.duke.display.console;
+package net.karmacoder.duke.console;
 
 import net.karmacoder.duke.display.Displayer;
 import net.karmacoder.duke.image.Image;

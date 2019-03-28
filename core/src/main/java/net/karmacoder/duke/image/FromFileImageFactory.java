@@ -1,5 +1,8 @@
 package net.karmacoder.duke.image;
 
+import net.karmacoder.duke.image.Image;
+import net.karmacoder.duke.image.ImageFactory;
+
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -27,7 +30,7 @@ public class FromFileImageFactory implements ImageFactory {
     return new ScaledBufferedImage(image, width, height);
   }
 
-  private static class UnScaledBufferedImage implements Image {
+  private static class UnScaledBufferedImage implements net.karmacoder.duke.image.Image {
     private final int[] data;
     private final int width;
     private final int height;

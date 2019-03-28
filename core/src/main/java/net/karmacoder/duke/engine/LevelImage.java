@@ -1,8 +1,7 @@
-package net.karmacoder.duke.samples;
+package net.karmacoder.duke.engine;
 
+import net.karmacoder.duke.engine.RayCasting.Level;
 import net.karmacoder.duke.image.Image;
-
-import static net.karmacoder.duke.engine.RayCasting.Level;
 
 public class LevelImage implements Image {
   private final Level level;

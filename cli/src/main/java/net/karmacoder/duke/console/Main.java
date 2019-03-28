@@ -1,6 +1,5 @@
-package net.karmacoder.duke;
+package net.karmacoder.duke.console;
 
-import net.karmacoder.duke.display.console.Console;
 import net.karmacoder.duke.engine.RayCasting;
 import net.karmacoder.duke.engine.RayCasting.Input;
 import net.karmacoder.duke.engine.RayCasting.Level;
@@ -8,7 +7,7 @@ import net.karmacoder.duke.engine.RayCasting.Screen;
 import net.karmacoder.duke.image.FromFileImageFactory;
 import net.karmacoder.duke.math.VectorMath;
 import net.karmacoder.duke.samples.DukeImage;
-import net.karmacoder.duke.samples.LevelImage;
+import net.karmacoder.duke.engine.LevelImage;
 
 import java.io.File;
 import java.io.IOException;
@@ -147,10 +146,10 @@ public class Main {
   private static void showHelp() {
     new Console().display(new DukeImage());
     System.out.println();
-    System.out.println("Console image displayer: Display an image in the console");
+    System.out.println("Console image displayer: Display an image in the duke.console");
     System.out.println();
     System.out.println("Usage: duke [-h|--help] [--scale S=1.0] [--width W=-1] [--height H=-1] [FILE_1 [.. FILE_N]]");
     System.out.println();
-    System.out.println("\tDisplay image files 0 to N in console. If scale s is given, rescale all images by factor S.");
+    System.out.println("\tDisplay image files 0 to N in duke.console. If scale s is given, rescale all images by factor S.");
   }
 }
