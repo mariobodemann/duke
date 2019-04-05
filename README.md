@@ -20,7 +20,7 @@ will output this beautiful image
 # Displaying a simple raycasting 3d env _WITH TEXTURES_
 
 ```
-./gradlew -Dorg.gradle.java.home=../jdk-12 assemble
+./gradlew -Dorg.gradle.java.home=../jdk-12 cli:run --args="3d $PWD/level --width 30 --height 30 --scale 8" 
 ```
 
 and
@@ -28,6 +28,8 @@ and
 ```
 ../jdk-12/bin/java -jar build/libs/duke.jar 3d level
 ```
+
+<img src="./assets/2.png" width=100/>
 
 
 Enjoy

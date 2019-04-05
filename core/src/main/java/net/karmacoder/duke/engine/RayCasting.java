@@ -112,7 +112,7 @@ public class RayCasting implements Engine<RayCasting.Level, RayCasting.Input> {
   }
 
   public static class Player {
-    final VectorMath.V pos;
+    public VectorMath.V pos;
     public VectorMath.V dir;
 
     Player(VectorMath.V pos, VectorMath.V dir) {
@@ -134,7 +134,7 @@ public class RayCasting implements Engine<RayCasting.Level, RayCasting.Input> {
     }
 
     public final Player player;
-    final Camera camera;
+    public final Camera camera;
 
     public Input(Player player, Camera camera) {
       this.player = player;
@@ -190,22 +190,7 @@ public class RayCasting implements Engine<RayCasting.Level, RayCasting.Input> {
       }
     }
 
-    return new Image() {
-      @Override
-      public int[] getPixels() {
-        return pixels;
-      }
-
-      @Override
-      public int getWidth() {
-        return screen.width;
-      }
-
-      @Override
-      public int getHeight() {
-        return screen.height;
-      }
-    };
+    return new Image(pixels, screen.width, screen.height);
   }
 
   class Hit {
@@ -288,7 +273,7 @@ public class RayCasting implements Engine<RayCasting.Level, RayCasting.Input> {
     final var tx = (asset.getWidth() * u);
     final var ty = (asset.getHeight() * v);
 
-    return asset.getPixels()[(int)tx + (int)(ty * asset.getWidth())];
+    return asset.getPixels()[(int) tx + (int) (ty * asset.getWidth())];
   }
 
   private int drawCeiling() {

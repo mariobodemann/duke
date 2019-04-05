@@ -1,5 +1,6 @@
 package net.karmacoder.duke.console;
 
+import net.karmacoder.duke.engine.LevelImage;
 import net.karmacoder.duke.engine.RayCasting;
 import net.karmacoder.duke.engine.RayCasting.Input;
 import net.karmacoder.duke.engine.RayCasting.Level;
@@ -7,7 +8,6 @@ import net.karmacoder.duke.engine.RayCasting.Screen;
 import net.karmacoder.duke.image.FromFileImageFactory;
 import net.karmacoder.duke.math.VectorMath;
 import net.karmacoder.duke.samples.DukeImage;
-import net.karmacoder.duke.engine.LevelImage;
 
 import java.io.File;
 import java.io.IOException;
@@ -55,7 +55,7 @@ public class Main {
     }
   }
 
-  public static void main(String[] args) throws IOException {
+  public static void main(String[] args) {
     final var arguments = Arrays.asList(args);
     final var settings = Settings.fromArguments(arguments);
 
@@ -120,6 +120,12 @@ public class Main {
     var rot = VectorMath.rot(VectorMath.dtor(5));
 
     if (console == null) {
+      var rot45 = VectorMath.rot(VectorMath.dtor(134));
+      input.player.dir = VectorMath.times(rot45, input.player.dir);
+      input.player.pos = VectorMath.vplus(input.player.pos, VectorMath.times(input.player.dir, -2.));
+
+      engine.processInput(input);
+
       display.display(engine.renderFrame());
     } else {
       System.out.println("<<Press a key to continue.>>");

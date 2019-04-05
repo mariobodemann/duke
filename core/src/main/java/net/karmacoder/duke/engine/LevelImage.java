@@ -3,15 +3,14 @@ package net.karmacoder.duke.engine;
 import net.karmacoder.duke.engine.RayCasting.Level;
 import net.karmacoder.duke.image.Image;
 
-public class LevelImage implements Image {
+public class LevelImage extends Image {
   private final Level level;
-
   public LevelImage(Level level) {
+    super(levelToData(level), level.width, level.height);
     this.level = level;
   }
 
-  @Override
-  public int[] getPixels() {
+  private static int[] levelToData(Level level) {
     final var cellcount = level.width * level.height;
     final var arr = new int[cellcount];
     for (var i = 0; i < cellcount; ++i) {
@@ -26,13 +25,7 @@ public class LevelImage implements Image {
     return arr;
   }
 
-  @Override
-  public int getWidth() {
-    return level.width;
-  }
-
-  @Override
-  public int getHeight() {
-    return level.height;
+  public Level getLevel() {
+    return level;
   }
 }

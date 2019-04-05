@@ -1,9 +1,25 @@
 package net.karmacoder.duke.image;
 
-public interface Image {
-  int[] getPixels();
+public class Image {
+  final int[] pixels;
+  final int width;
+  final int height;
 
-  int getWidth();
+  public Image(int[] pixels, int width, int height) {
+    this.pixels = pixels;
+    this.width = width;
+    this.height = height;
+  }
 
-  int getHeight();
+  public int[] getPixels() {
+    return pixels;
+  }
+
+  public int getWidth() {
+    return width;
+  }
+
+  public int getHeight() {
+    return height;
+  }
 }
