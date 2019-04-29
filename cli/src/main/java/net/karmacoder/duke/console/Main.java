@@ -1,5 +1,6 @@
 package net.karmacoder.duke.console;
 
+import net.karmacoder.duke.display.Displayer;
 import net.karmacoder.duke.engine.LevelImage;
 import net.karmacoder.duke.engine.RayCasting;
 import net.karmacoder.duke.engine.RayCasting.Input;
@@ -7,6 +8,7 @@ import net.karmacoder.duke.engine.RayCasting.Level;
 import net.karmacoder.duke.engine.RayCasting.Screen;
 import net.karmacoder.duke.image.FromFileImageFactory;
 import net.karmacoder.duke.math.VectorMath;
+import net.karmacoder.duke.math.VectorMath.M;
 import net.karmacoder.duke.samples.DukeImage;
 
 import java.io.File;
@@ -25,11 +27,11 @@ public class Main {
     final List<String> files = new ArrayList<>();
 
     static Settings fromArguments(List<String> arguments) {
-      final var settings = new Settings();
-      for (var i = 0; i < arguments.size(); ++i) {
+      final Settings settings = new Settings();
+      for (int i = 0; i < arguments.size(); ++i) {
         final String argument = arguments.get(i);
         if (argument.equals("--scale") && arguments.size() > i + 1) {
-          final var stringSize = arguments.get(i + 1);
+          final String stringSize = arguments.get(i + 1);
           settings.scale = Float.parseFloat(stringSize);
           settings.scaled = true;
         }
@@ -56,8 +58,8 @@ public class Main {
   }
 
   public static void main(String[] args) {
-    final var arguments = Arrays.asList(args);
-    final var settings = Settings.fromArguments(arguments);
+    final List<String> arguments = Arrays.asList(args);
+    final Settings settings = Settings.fromArguments(arguments);
 
     if (arguments.size() == 0 || arguments.contains("--help") || arguments.contains("-h") || settings.files.isEmpty()) {
       showHelp();
@@ -72,9 +74,9 @@ public class Main {
         e.printStackTrace(System.err);
       }
     } else {
-      var factory = new FromFileImageFactory();
+      final FromFileImageFactory factory = new FromFileImageFactory();
 
-      for (final var file : settings.files) {
+      for (final String file : settings.files) {
         if (settings.files.size() > 1) {
           System.out.println(file);
         }
@@ -96,18 +98,18 @@ public class Main {
   }
 
   private static void threeD(Settings settings) throws Exception {
-    final var level = Level.fromFile(settings.files.get(0), new FromFileImageFactory());
+    final Level level = Level.fromFile(settings.files.get(0), new FromFileImageFactory());
 
-    final var input = new Input(
+    final Input input = new Input(
         level.initialPlayer,
         new Input.Camera(10. * settings.scale, 10. * settings.scale)
     );
 
-    final var width = settings.width < 0 ? 30 : settings.width;
-    final var height = settings.height < 0 ? 40 : settings.height;
+    final int width = settings.width < 0 ? 30 : settings.width;
+    final int height = settings.height < 0 ? 40 : settings.height;
 
-    final var engine = new RayCasting(new Screen(width, height));
-    final var display = new Console();
+    final RayCasting engine = new RayCasting(new Screen(width, height));
+    final Displayer display = new Console();
 
     engine.loadLevel(level);
     engine.processInput(input);
@@ -115,12 +117,12 @@ public class Main {
     System.out.println("Current level:");
     display.display(new LevelImage(level));
 
-    final var console = System.console();
-    var read = 0;
-    var rot = VectorMath.rot(VectorMath.dtor(5));
+    final java.io.Console console = System.console();
+    final M rot = VectorMath.rot(VectorMath.dtor(5));
+    int read = 0;
 
     if (console == null) {
-      var rot45 = VectorMath.rot(VectorMath.dtor(134));
+      final M rot45 = VectorMath.rot(VectorMath.dtor(134));
       input.player.dir = VectorMath.times(rot45, input.player.dir);
       input.player.pos = VectorMath.vplus(input.player.pos, VectorMath.times(input.player.dir, -2.));
 

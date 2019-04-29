@@ -15,15 +15,15 @@ public class FromFileImageFactory implements ImageFactory {
 
   @Override
   public Image create(String path, float scale) throws Exception {
-    final var image = read(new File(path));
-    final var width = (int) (image.getWidth() * scale);
-    final var height = (int) (image.getHeight() * scale);
+    final BufferedImage image = read(new File(path));
+    final int width = (int) (image.getWidth() * scale);
+    final int height = (int) (image.getHeight() * scale);
     return new ScaledBufferedImage(image, width, height);
   }
 
   @Override
   public Image create(String path, int width, int height) throws Exception {
-    var image = read(new File(path));
+    BufferedImage image = read(new File(path));
     return new ScaledBufferedImage(image, width, height);
   }
 
@@ -48,12 +48,12 @@ public class FromFileImageFactory implements ImageFactory {
     }
 
     private static int[] readData(BufferedImage image, int width, int height) {
-      final var aspectRatio = ((float) image.getWidth()) / image.getHeight();
+      final float aspectRatio = ((float) image.getWidth()) / image.getHeight();
 
       width = width <= 0 ? (int) (height * aspectRatio) : width;
       height = height <= 0 ? (int) (width / aspectRatio) : height;
 
-      final var scaledImage = new BufferedImage(width, height, TYPE_INT_RGB);
+      final BufferedImage scaledImage = new BufferedImage(width, height, TYPE_INT_RGB);
       Graphics2D graphics2D = scaledImage.createGraphics();
       graphics2D.drawImage(image, 0, 0, width, height, null);
       graphics2D.dispose();

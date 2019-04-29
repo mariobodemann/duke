@@ -4,10 +4,11 @@ import net.karmacoder.duke.image.Image;
 import net.karmacoder.duke.image.ImageFactory;
 import net.karmacoder.duke.image.SinglePixelImage;
 import net.karmacoder.duke.math.VectorMath;
+import net.karmacoder.duke.math.VectorMath.V;
 
 import java.io.IOException;
+import java.nio.file.FileSystems;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -31,37 +32,37 @@ public class RayCasting implements Engine<RayCasting.Level, RayCasting.Input> {
     }
 
     public static Level fromFile(String path, ImageFactory factory) throws Exception {
-      final var lines = Files.readAllLines(Path.of(path));
+      final List<String> lines = Files.readAllLines(FileSystems.getDefault().getPath(path));
 
-      final var player = getPlayer(lines);
-      final var size = getLevelDimension(lines);
-      final var cells = getCells(lines, size[0], size[1]);
-      final var assets = getAssets(factory, lines);
+      final Player player = getPlayer(lines);
+      final int[] size = getLevelDimension(lines);
+      final List<Integer> cells = getCells(lines, size[0], size[1]);
+      final List<Image> assets = getAssets(factory, lines);
 
       return new Level(player, size[0], size[1], cells, assets);
     }
 
     private static Player getPlayer(List<String> lines) throws IOException {
-      final var playerLine = lines.remove(0);
+      final String playerLine = lines.remove(0);
 
-      final var split = playerLine.split(",");
+      final String[] split = playerLine.split(",");
       if (split.length != 3) {
         throw new IOException("Cannot parse player line.");
       }
 
-      final var x = Double.parseDouble(split[0]);
-      final var y = Double.parseDouble(split[1]);
-      final var a = Double.parseDouble(split[2]);
+      final double x = Double.parseDouble(split[0]);
+      final double y = Double.parseDouble(split[1]);
+      final double a = Double.parseDouble(split[2]);
 
-      final var pos = new VectorMath.V(x, y);
-      final var dir = VectorMath.times(VectorMath.rot(VectorMath.dtor(a)), new VectorMath.V(0, 1));
+      final V pos = new V(x, y);
+      final V dir = VectorMath.times(VectorMath.rot(VectorMath.dtor(a)), new V(0, 1));
 
       return new Player(pos, dir);
     }
 
     private static int[] getLevelDimension(List<String> lines) throws IOException {
-      final var dimensionLine = lines.remove(0);
-      final var size = dimensionLine.split(",");
+      final String dimensionLine = lines.remove(0);
+      final String[] size = dimensionLine.split(",");
 
       if (size.length != 2) {
         throw new IOException("dimension of level is wrong.");
@@ -72,13 +73,13 @@ public class RayCasting implements Engine<RayCasting.Level, RayCasting.Input> {
 
     private static List<Integer> getCells(List<String> lines, int width, int height) throws IOException {
       final List<Integer> result = new ArrayList<>(width * height);
-      for (var i = 0; i < height; ++i) {
-        final var line = lines.remove(0);
+      for (int i = 0; i < height; ++i) {
+        final String line = lines.remove(0);
         if (line.length() < width) {
           throw new IOException("Level Line is to small: Line " + i + " needs to be atleast " + width + " characters long");
         }
 
-        for (var x = 0; x < width; ++x) {
+        for (int x = 0; x < width; ++x) {
           result.add(line.charAt(x) - '0');
         }
       }
@@ -88,7 +89,7 @@ public class RayCasting implements Engine<RayCasting.Level, RayCasting.Input> {
 
     private static List<Image> getAssets(ImageFactory factory, List<String> lines) throws Exception {
       final List<Image> result = new ArrayList<>(lines.size());
-      for (final var asset : lines) {
+      for (final String asset : lines) {
         if (asset.length() <= 0) {
           throw new IOException(asset + " is not a valid asset description");
         }
@@ -112,10 +113,10 @@ public class RayCasting implements Engine<RayCasting.Level, RayCasting.Input> {
   }
 
   public static class Player {
-    public VectorMath.V pos;
-    public VectorMath.V dir;
+    public V pos;
+    public V dir;
 
-    Player(VectorMath.V pos, VectorMath.V dir) {
+    Player(V pos, V dir) {
       this.pos = pos;
       this.dir = dir;
     }
@@ -178,14 +179,13 @@ public class RayCasting implements Engine<RayCasting.Level, RayCasting.Input> {
 
   @Override
   public Image renderFrame() {
-
-    final var hits = new ArrayList<Hit>(screen.width);
+    final ArrayList<Hit> hits = new ArrayList<>(screen.width);
     castAllColumns(hits);
 
-    final var pixels = new int[screen.width * screen.height];
+    final int[] pixels = new int[screen.width * screen.height];
 
-    for (var y = 0; y < screen.height; ++y) {
-      for (var x = 0; x < screen.width; ++x) {
+    for (int y = 0; y < screen.height; ++y) {
+      for (int x = 0; x < screen.width; ++x) {
         pixels[x + y * screen.width] = rayCast(x, y, hits, screen);
       }
     }
@@ -194,12 +194,12 @@ public class RayCasting implements Engine<RayCasting.Level, RayCasting.Input> {
   }
 
   class Hit {
-    final VectorMath.V coordinate;
-    final VectorMath.V direction;
+    final V coordinate;
+    final V direction;
     final int cell;
     final double distance;
 
-    Hit(VectorMath.V coordinate, VectorMath.V direction, int cell, double distance) {
+    Hit(V coordinate, V direction, int cell, double distance) {
       this.coordinate = coordinate;
       this.direction = direction;
       this.cell = cell;
@@ -208,21 +208,21 @@ public class RayCasting implements Engine<RayCasting.Level, RayCasting.Input> {
   }
 
   private void castAllColumns(List<Hit> hits) {
-    final var playerToPlane = VectorMath.times(input.player.dir, input.camera.distance);
-    final var planeDir = VectorMath.times(VectorMath.rot(VectorMath.dtor(90.0)), input.player.dir);
-    final var planeStart = VectorMath.vplus(
+    final V playerToPlane = VectorMath.times(input.player.dir, input.camera.distance);
+    final V planeDir = VectorMath.times(VectorMath.rot(VectorMath.dtor(90.0)), input.player.dir);
+    final V planeStart = VectorMath.vplus(
         input.player.pos, VectorMath.vplus(playerToPlane, VectorMath.times(planeDir, input.camera.width / 2.0)));
 
-    for (var x = 0; x < screen.width; ++x) {
-      var rayOnPlane =
+    for (int x = 0; x < screen.width; ++x) {
+      V rayOnPlane =
           VectorMath.vplus(planeStart,
               VectorMath.times(VectorMath.times(VectorMath.rot(VectorMath.dtor(180.0)), planeDir),
                   input.camera.width * (1.0 - (double) x / screen.width)));
-      var rayDir = VectorMath.vminus(rayOnPlane, input.player.pos);
+      V rayDir = VectorMath.vminus(rayOnPlane, input.player.pos);
 
-      var hit = false;
-      for (var distance = 0.01; distance < 100. && !hit; distance += 0.01) {
-        VectorMath.V check = VectorMath.vplus(input.player.pos, VectorMath.times(rayDir, distance));
+      boolean hit = false;
+      for (double distance = 0.01; distance < 100. && !hit; distance += 0.01) {
+        V check = VectorMath.vplus(input.player.pos, VectorMath.times(rayDir, distance));
         if (((int) check.x) >= 0 && ((int) check.x) < level.width &&
             ((int) check.y) >= 0 && ((int) check.y) < level.height) {
           int cell = level.cells.get(((int) check.y * level.width) + ((int) check.x));
@@ -244,13 +244,13 @@ public class RayCasting implements Engine<RayCasting.Level, RayCasting.Input> {
   }
 
   private int rayCast(int x, int y, List<Hit> hits, Screen screen) {
-    final var hit = hits.get(x);
+    final Hit hit = hits.get(x);
     if (hit == null) {
       return drawCeiling();
     }
 
-    final var distance = hit.distance;
-    final var wallheight = Math.min(1.0 / distance, screen.height);
+    final double distance = hit.distance;
+    final double wallheight = Math.min(1.0 / distance, screen.height);
 
     if (y > screen.height / 2. - wallheight / 2. &&
         y < screen.height / 2. + wallheight / 2.) {
@@ -266,12 +266,12 @@ public class RayCasting implements Engine<RayCasting.Level, RayCasting.Input> {
   }
 
   private int drawHit(Hit hit, double y, double height) {
-    final var u = Math.abs((hit.coordinate.x + hit.coordinate.y) % 1.0);
-    final var v = VectorMath.clamp(y / height, 0., 0.999);
-    final var asset = level.assets.get(hit.cell - 1); // assets start from 1 on the map
+    final double u = Math.abs((hit.coordinate.x + hit.coordinate.y) % 1.0);
+    final double v = VectorMath.clamp(y / height, 0., 0.999);
+    final Image asset = level.assets.get(hit.cell - 1); // assets start from 1 on the map
 
-    final var tx = (asset.getWidth() * u);
-    final var ty = (asset.getHeight() * v);
+    final double tx = (asset.getWidth() * u);
+    final double ty = (asset.getHeight() * v);
 
     return asset.getPixels()[(int) tx + (int) (ty * asset.getWidth())];
   }

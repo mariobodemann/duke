@@ -52,8 +52,8 @@ public class VectorMath {
   }
 
   public static M rot(double angle) {
-    final var c = cos(angle);
-    final var s = sin(angle);
+    final double c = cos(angle);
+    final double s = sin(angle);
 
     return new M(c, -s, s, c);
   }
@@ -79,7 +79,7 @@ public class VectorMath {
   }
 
   public static V normalize(V v) {
-    final var l = sqrt(v.x * v.x + v.y * v.y);
+    final double l = sqrt(v.x * v.x + v.y * v.y);
     return times(v, 1.0 / l);
   }
 
@@ -88,9 +88,9 @@ public class VectorMath {
   }
 
   public static Hsv rgbToHsv(int rgb) {
-    var r = (rgb >> 16) & 0xff;
-    var g = (rgb >> 8) & 0xff;
-    var b = rgb & 0xff;
+    int r = (rgb >> 16) & 0xff;
+    int g = (rgb >> 8) & 0xff;
+    int b = rgb & 0xff;
 
     Hsv hsv = new Hsv();
 
@@ -124,13 +124,13 @@ public class VectorMath {
   }
 
   public static int hsvToRgb(Hsv hsv) {
-    final var c = hsv.v * hsv.s;
-    final var x = c * (1.0 - abs((hsv.h / 60.0 % 2.0) - 1.0));
-    final var m = hsv.v - c;
+    final double c = hsv.v * hsv.s;
+    final double x = c * (1.0 - abs((hsv.h / 60.0 % 2.0) - 1.0));
+    final double m = hsv.v - c;
 
-    var r = 0.0;
-    var g = 0.0;
-    var b = 0.0;
+    double r = 0.0;
+    double g = 0.0;
+    double b = 0.0;
 
     if (0 <= hsv.h && hsv.h < 60) {
       r = c;
