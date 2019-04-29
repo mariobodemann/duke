@@ -44,15 +44,24 @@ public class FromFileImageFactory implements ImageFactory {
   private static class ScaledBufferedImage extends Image {
 
     ScaledBufferedImage(BufferedImage image, int width, int height) {
-      super(readData(image, width, height), width, height);
+      super(
+          readData(image, getScaledWidth(image, width, height), getScaledHeight(image, width, height)),
+          getScaledWidth(image, width, height),
+          getScaledHeight(image, width, height)
+      );
+    }
+
+    private static int getScaledWidth(BufferedImage image, int width, int height) {
+      final float aspectRatio = ((float) image.getWidth()) / image.getHeight();
+      return width <= 0 ? (int) (height * aspectRatio) : width;
+    }
+
+    private static int getScaledHeight(BufferedImage image, int width, int height) {
+      final float aspectRatio = ((float) image.getWidth()) / image.getHeight();
+      return height <= 0 ? (int) (width / aspectRatio) : height;
     }
 
     private static int[] readData(BufferedImage image, int width, int height) {
-      final float aspectRatio = ((float) image.getWidth()) / image.getHeight();
-
-      width = width <= 0 ? (int) (height * aspectRatio) : width;
-      height = height <= 0 ? (int) (width / aspectRatio) : height;
-
       final BufferedImage scaledImage = new BufferedImage(width, height, TYPE_INT_RGB);
       Graphics2D graphics2D = scaledImage.createGraphics();
       graphics2D.drawImage(image, 0, 0, width, height, null);
