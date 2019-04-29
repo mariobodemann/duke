@@ -3,14 +3,8 @@
 
 
 ```
-./gradlew run -PappArgs="['--width','13','/home/mario/Pictures/tux.png']"
-```
-
-or
-
-```
 ./gradlew assemble
-java -jar build/libs/duke.jar /usr/share/pixmaps/faces/lightning.jpg --width 30
+java -cp cli/build/libs/cli-1.0.jar:core/build/libs/core-1.0.jar net.karmacoder.duke.console.Main
 ```
 
 will output this beautiful image
@@ -20,22 +14,10 @@ will output this beautiful image
 # Displaying a simple raycasting 3d env _WITH TEXTURES_
 
 ```
-./gradlew -Dorg.gradle.java.home=../jdk-12 cli:run --args="3d $PWD/level --width 30 --height 30 --scale 8" 
-```
-
-and
-
-```
-../jdk-12/bin/java -jar build/libs/duke.jar 3d level
+java -cp cli/build/libs/cli-1.0.jar:core/build/libs/core-1.0.jar net.karmacoder.duke.console.Main /usr/share/pixmaps/fedora-logo-sprite.png 3d $PWD/level --width 30 --height 30
 ```
 
 <img src="./assets/2.png" width=100/>
 
 
 Enjoy
-
-
-PS: You might be interested in
-```
-alias duke='~/Applications/jdk-12/bin/java -jar ~/Projects/duke/build/libs/duke.jar --height $(tput lines)'
-```

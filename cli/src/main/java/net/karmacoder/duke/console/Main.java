@@ -1,6 +1,5 @@
 package net.karmacoder.duke.console;
 
-import net.karmacoder.duke.display.Displayer;
 import net.karmacoder.duke.engine.LevelImage;
 import net.karmacoder.duke.engine.RayCasting;
 import net.karmacoder.duke.engine.RayCasting.Input;
@@ -12,7 +11,6 @@ import net.karmacoder.duke.math.VectorMath.M;
 import net.karmacoder.duke.samples.DukeImage;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -109,7 +107,7 @@ public class Main {
     final int height = settings.height < 0 ? 40 : settings.height;
 
     final RayCasting engine = new RayCasting(new Screen(width, height));
-    final Displayer display = new Console();
+    final Console display = new Console();
 
     engine.loadLevel(level);
     engine.processInput(input);
@@ -117,38 +115,29 @@ public class Main {
     System.out.println("Current level:");
     display.display(new LevelImage(level));
 
-    final java.io.Console console = System.console();
-    final M rot = VectorMath.rot(VectorMath.dtor(5));
-    int read = 0;
-
-    if (console == null) {
-      final M rot45 = VectorMath.rot(VectorMath.dtor(134));
-      input.player.dir = VectorMath.times(rot45, input.player.dir);
-      input.player.pos = VectorMath.vplus(input.player.pos, VectorMath.times(input.player.dir, -2.));
+    final M rot36 = VectorMath.rot(VectorMath.dtor(3.6));
+    input.player.pos = VectorMath.vplus(input.player.pos, VectorMath.times(input.player.dir, -2.));
+    for (int i = 0; i < 100; i++) {
+      input.player.dir = VectorMath.times(rot36, input.player.dir);
 
       engine.processInput(input);
-
       display.display(engine.renderFrame());
-    } else {
-      System.out.println("<<Press a key to continue.>>");
-      try {
-        read = console.reader().read();
-        while (read != 27) {
-          if (read == 10) {
-            continue;
-          }
-
-          if (read == 119) System.out.print("DONEOALJDF");
-          System.out.println(read);
-          input.player.dir = VectorMath.times(rot, input.player.dir);
-          engine.processInput(input);
-
-          display.display(engine.renderFrame());
-          read = console.reader().read();
-        }
-      } catch (IOException e) {
-      }
+      moveUp(settings.height);
+      Thread.sleep(10);
     }
+
+    moveDown(settings.height);
+  }
+
+  private final static String MOVE_N_LINES_UP = "\u001B[%dA";
+  private final static String MOVE_N_LINES_DOWN = "\u001B[%dB";
+
+  private static void moveUp(int height) {
+    System.out.printf(MOVE_N_LINES_UP, height / 2);
+  }
+
+  private static void moveDown(int height) {
+    System.out.printf(MOVE_N_LINES_DOWN, height / 2);
   }
 
   private static void showHelp() {

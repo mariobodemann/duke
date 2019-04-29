@@ -98,7 +98,6 @@ public class RayCasting implements Engine<RayCasting.Level, RayCasting.Input> {
         if (asset.startsWith("#")) {
           image = new SinglePixelImage(stringToRgb(asset.substring(1)));
         } else {
-          System.out.println(asset);
           image = factory.create(asset);
         }
         result.add(image);
@@ -273,7 +272,7 @@ public class RayCasting implements Engine<RayCasting.Level, RayCasting.Input> {
     final double tx = (asset.getWidth() * u);
     final double ty = (asset.getHeight() * v);
 
-    return asset.getPixels()[(int) tx + (int) (ty * asset.getWidth())];
+    return asset.getPixels()[(int) Math.floor(tx) + (int) Math.floor(ty) * asset.getWidth()];
   }
 
   private int drawCeiling() {
