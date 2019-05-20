@@ -11,6 +11,16 @@ will output this beautiful image
 
 <img src="./assets/1.png" width=100/>
 
+## Aliasing
+
+If you execute the following line, a new alias called `duke` will get created and that makes duking even easier:
+
+```bash
+./gradlew assemble
+echo 'alias duke="java -cp '$PWD'/cli/build/libs/cli-1.0.jar:'$PWD'/core/build/libs/core-1.0.jar net.karmacoder.duke.console.Main --height $(tput lines)"' >> ~/.bashrc
+```
+
+
 # Displaying a simple raycasting 3d env _WITH TEXTURES_
 
 ```
